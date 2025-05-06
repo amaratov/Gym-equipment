@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  GetEquipmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/getEquipment.handler
+      Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:GetItem
+              Resource: arn:aws:dynamodb:ca-central-1:570753531380:table/GymEquipment
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /equipment/{userId}
+            Method: GET
+      Environment:
+        Variables:
+          CORS_ALLOW_ORIGIN: '*'
+  CreateEquipmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/createEquipment.handler
+      Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:ca-central-1:570753531380:table/GymEquipment
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /equipment
+            Method: POST
+      Environment:
+        Variables:
+          CORS_ALLOW_ORIGIN: '*'
+  UpdateEquipmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/updateEquipment.handler
+      Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:UpdateItem
+              Resource: arn:aws:dynamodb:ca-central-1:570753531380:table/GymEquipment
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /equipment/{userId}/{equipmentId}
+            Method: PUT
+      Environment:
+        Variables:
+          CORS_ALLOW_ORIGIN: '*'
+  DeleteEquipmentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/deleteEquipment.handler
+      Runtime: nodejs18.x
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: arn:aws:dynamodb:ca-central-1:570753531380:table/GymEquipment
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /equipment/{userId}/{equipmentId}
+            Method: DELETE
+      Environment:
+        Variables:
+          CORS_ALLOW_ORIGIN: '*'
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
